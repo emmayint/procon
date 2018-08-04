@@ -90,7 +90,7 @@ int enqueue_item(int item)
 }
 
 
-void *producer(void *param)
+void* producer(void* param)
 {
     producerStruct* producer = (producerStruct*)param;
 
@@ -128,13 +128,13 @@ int dequeue_item()
     return consumerArray[consumerCounter];
 }
 
-void *consumer(void *param)
+void* consumer(void* param)
 {
     consumerStruct* consumer = (consumerStruct*)param;
 
     int count = 0;
-/*over consume*/
-    while (count++ < consumer->max_cons))
+
+    while (count++ < consumer->max_cons)
     {
         sleep(cTime);
         sem_wait(&full);
@@ -235,6 +235,7 @@ int main(int argc, char const *argv[])
 
         consumerInfo[i].consumerId = i;
         consumerInfo[i].thread_num = numOfConsumer;
+        //set over consume thread max_cons 
         if(i==0){
             consumerInfo[i].max_cons = each_consume + 
                     numOfProducer * max_each_produce - each_consume * numOfConsumer;
