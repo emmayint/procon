@@ -134,13 +134,13 @@ void *consumer(void *param)
 
     int count = 0;
 /*over consume*/
-    while (count++ < consumer->max_cons || (consumerCounter <= numOfProducer*max_each_produce))
+    while (count++ < consumer->max_cons))
     {
         sleep(cTime);
         sem_wait(&full);
         pthread_mutex_lock(&m);
 
-        printf("\n%d is consumed by thread-> %d", bounded_buffer[cBufferIndex], consumer->consumerId+1); // consumption
+        printf("\n%d was consumed by thread-> %d", bounded_buffer[cBufferIndex], consumer->consumerId+1); // consumption
         
         dequeue_item();
         
@@ -205,7 +205,8 @@ int main(int argc, char const *argv[])
     if(numOfProducer * max_each_produce > each_consume * numOfConsumer)
         overConsume =1;
     printf("Over consume on? : %d\n", overConsume);
-    printf("Over consume amount : %d\n", each_consume + numOfProducer * max_each_produce - each_consume * numOfConsumer);
+    printf("Over consume amount : %d\n", each_consume + 
+            numOfProducer * max_each_produce - each_consume * numOfConsumer);
     pTime = atoi(argv[5]);
     printf("Time each Producer Sleeps (seconds) : %d\n", pTime);
     cTime = atoi(argv[6]);
@@ -234,8 +235,12 @@ int main(int argc, char const *argv[])
 
         consumerInfo[i].consumerId = i;
         consumerInfo[i].thread_num = numOfConsumer;
-        consumerInfo[i].max_cons = numOfProducer * max_each_produce / numOfConsumer;
-
+        if(i==0){
+            consumerInfo[i].max_cons = each_consume + 
+                    numOfProducer * max_each_produce - each_consume * numOfConsumer;
+        }else{
+            consumerInfo[i].max_cons = numOfProducer * max_each_produce / numOfConsumer;
+        }
         pthread_create(&consumerThread[i], &attr, consumer, &consumerInfo[i]);
 
         i++;
